@@ -1,19 +1,31 @@
 from oct2py import octave
 import os
+from src import train_random_forest
+import pandas as pd
 
+# -----------------------------
+# Paths setup
+# -----------------------------
 base_dir = os.path.dirname(__file__)
 os.makedirs(os.path.join(base_dir, 'data'), exist_ok=True)
-
 octave.addpath(os.path.join(base_dir, 'src'))
 
 output_filename = os.path.join(base_dir, 'data', 'rcs_output.csv')
 
-N = 1000
-target_ratio = 0.3
+# -----------------------------
+# Generate synthetic RCS data with Octave
+# -----------------------------
+N = 5000
+octave.generate_rcs_data(output_filename, N, nout=0)
 
-try:
-    octave.generate_rcs_data(output_filename, N, target_ratio, nout=0)
-    print(f"CSV file created at: {output_filename}")
+# -----------------------------
+# Read the generated data
+# -----------------------------
+df = pd.read_csv(output_filename, header=None)
+df.columns = ['Pr_noisy', 'sigma', 'target_class']
 
-except Exception as e:
-    print("Error calling Octave function:", e)
+# -----------------------------
+# Train Random Forest model
+# -----------------------------
+train_random_forest.train_random_forest(output_filename, n_trials=30)
+
