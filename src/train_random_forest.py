@@ -5,7 +5,6 @@ def train_random_forest(data_file, n_trials=30):
     from sklearn.model_selection import train_test_split, cross_val_score
     from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
     import matplotlib.pyplot as plt
-    import seaborn as sns
 
     # -----------------------------
     # Load CSV data
@@ -25,7 +24,7 @@ def train_random_forest(data_file, n_trials=30):
     # -----------------------------
     def objective(trial):
         n_estimators = trial.suggest_int('n_estimators', 50, 300)
-        max_depth = trial.suggest_int('max_depth', 2, 20)
+        max_depth = trial.suggest_int('max_depth', 2, 25)
         min_samples_split = trial.suggest_int('min_samples_split', 2, 10)
         min_samples_leaf = trial.suggest_int('min_samples_leaf', 1, 5)
 
@@ -71,20 +70,12 @@ def train_random_forest(data_file, n_trials=30):
     df_test['true_class'] = y_test
     df_test['pred_class'] = y_pred
 
-    # -----------------------------
-    # Graph: KDE distribution of SNR per class
-    # -----------------------------
-    plt.figure(figsize=(10,6))
-    for cls, color, label in zip([1,2,3], ['blue','green','red'], ['Small','Medium','Large']):
-        cls_data = df_test[df_test['true_class'] == cls]
-        sns.kdeplot(x=cls_data['SNR'], fill=True, color=color, alpha=0.3, label=f'True {label}')
-
-    plt.xlabel('SNR')
-    plt.ylabel('Density')
-    plt.title('SNR Distribution per Target Class')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
-
-
+    # Return results for comparison
+    return {
+        'model': rf_best,
+        'y_pred': y_pred,
+        'y_test': y_test,
+        'X_test': X_test,
+        'X_train': X_train,
+        'y_train': y_train
+    }
