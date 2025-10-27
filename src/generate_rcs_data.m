@@ -1,25 +1,22 @@
 function generate_rcs_data(filename, N)
     % ----------------------------------------------------
     % Synthetic Radar RCS Data Generator
-    % Features for model: Pr_noisy
-    % Labels: target_class
+    % Features for model: [Range, SNR]
+    % Labels: target_class (1=small, 2=medium, 3=large)
     % ----------------------------------------------------
-
-    global PT G LAMBDA F B T L
 
     % Radar & physical parameters
     PT = 100;            % Transmit power (Watts)
-    G = 90;             % Antenna gain (linear)
+    G = 50;             % Antenna gain (linear)
     L = 1.5;            % System losses
     LAMBDA = 0.03;      % Wavelength (m)
-    R = 1000;           % Fixed range (m)
 
     % Noise parameters
     k = 1.38e-23;       % Boltzmann constant
     T = 290;            % Noise temperature (Kelvin)
     B = 1e6;            % Bandwidth (Hz)
     F = 3;              % Noise figure (linear)
-    NOISE_FLOOR = k * T * B * F * L;
+    Pn = k * T * B * F * L;  % Noise power (W)
 
     % RCS ranges (with overlap)
     sigma_ranges = [
@@ -32,7 +29,8 @@ function generate_rcs_data(filename, N)
     % Preallocate arrays
     % ----------------------------------------------------
     sigma = zeros(N,1);
-    Pr_noisy = zeros(N,1);
+    range = zeros(N,1);
+    SNR = zeros(N,1);
     target_class = zeros(N,1);
 
     % ----------------------------------------------------
@@ -49,18 +47,22 @@ function generate_rcs_data(filename, N)
         sigma_i = sigma_min + (sigma_max - sigma_min) * rand();
         sigma(i) = sigma_i;
 
-        % Ideal received power (constant range)
-        Pr = PT * (G^2) * (LAMBDA^2) * sigma_i / ((4*pi)^3 * R^4 * L);
+        % Random Range between 1 km - 10 km
+        R = 1000 + rand() * 9000;
+        Range(i) = R;
+
+        % Ideal received power
+        Pr = PT * (G^2) * (LAMBDA^2) * sigma_i / ((4*pi)^3 * Range(i)^4 * L);
 
         % Add Gaussian noise
-        Pr_noisy(i) = Pr + sqrt(NOISE_FLOOR) * randn();
+        SNR(i) = (Pr / Pn) * (1 + 0.05 * randn());
     end
 
     % ----------------------------------------------------
     % Save data to CSV file
-    % Columns: [Pr_noisy, sigma, target_class]
+    % Columns: [Range, SNR, target_class]
     % ----------------------------------------------------
-    data = [Pr_noisy, sigma, target_class];
+    data = [Range(:), SNR(:), target_class(:)];
     csvwrite(filename, data);
     fprintf('CSV successfully created with %d samples: %s\n', N, filename);
 end

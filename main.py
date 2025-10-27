@@ -22,7 +22,7 @@ octave.generate_rcs_data(output_filename, N, nout=0)
 # Read the generated data
 # -----------------------------
 df = pd.read_csv(output_filename, header=None)
-df.columns = ['Pr_noisy', 'sigma', 'target_class']
+df.columns = ['Range', 'SNR', 'target_class']
 
 # -----------------------------
 # Train Random Forest model
