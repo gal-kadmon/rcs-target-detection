@@ -1,3 +1,6 @@
+import os
+
+
 def train_mlp(data_file, n_trials=20):
     """
     Train a small MLP classifier with Optuna on scaled features.
@@ -50,7 +53,7 @@ def train_mlp(data_file, n_trials=20):
         activation = trial.suggest_categorical('activation', ['relu', 'tanh'])
         alpha = trial.suggest_float('alpha', 1e-5, 1e-2, log=True)
         learning_rate_init = trial.suggest_float('learning_rate_init', 1e-4, 0.01, log=True)
-
+        
         if hidden_layer_2 > 0:
             hidden_layers = (hidden_layer_1, hidden_layer_2)
         else:
@@ -62,18 +65,19 @@ def train_mlp(data_file, n_trials=20):
             solver='adam',
             alpha=alpha,
             learning_rate_init=learning_rate_init,
-            max_iter=1000,
+            max_iter=2000,
             random_state=42
         )
 
         scores = cross_val_score(clf, X_train, y_train, cv=3, scoring='f1_macro')
         return scores.mean()
 
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
     study = optuna.create_study(direction='maximize')
     study.optimize(objective, n_trials=n_trials)
 
-    print("\nBest Hyperparameters (MLP):")
-    print(study.best_params)
+    #print("\nBest Hyperparameters (MLP):")
+    #print(study.best_params)
 
     # -----------------------------
     # Train best model
@@ -106,7 +110,13 @@ def train_mlp(data_file, n_trials=20):
     cm = confusion_matrix(y_test, y_pred, labels=[1,2,3])
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Small','Medium','Large'])
     disp.plot(cmap=plt.cm.Blues)
-    plt.show()
+    # plt.show()
+
+    output_dir = "/home/gal/Desktop/Radars/rcs-target-detection/graphs"
+    os.makedirs(output_dir, exist_ok=True)
+
+
+    plt.savefig(os.path.join(output_dir, "mlp_confusion_matrix.png"), dpi=300)
 
     # -----------------------------
     # Return results for comparison
@@ -118,5 +128,5 @@ def train_mlp(data_file, n_trials=20):
         'X_test': X_test,
         'X_train': X_train,
         'y_train': y_train,
-        'scaler': scaler  # חשוב אם רוצים לחזות על דאטה חדש
+        'scaler': scaler
     }

@@ -22,7 +22,7 @@ data_file = os.path.join(base_dir, 'data', 'rcs_output.csv')
 # Generate synthetic RCS data with Octave
 # -----------------------------
 N = 5000
-octave.generate_rcs_data(data_file, N, nout=0)
+#octave.generate_rcs_data(data_file, N, nout=0)
 
 # -----------------------------
 # Read the generated data
@@ -36,7 +36,7 @@ df.columns = ['Range', 'SNR', 'target_class']
 plt.figure(figsize=(10,6))
 for cls, color, label in zip([1,2,3], ['blue','green','red'], ['Small','Medium','Large']):
     cls_data = df[df['target_class'] == cls]
-    sns.kdeplot(x=cls_data['SNR'], fill=True, color=color, alpha=0.3, label=f'True {label}')
+    sns.kdeplot(x=cls_data['SNR'], fill=True, color=color, alpha=0.3, label=f'{label}')
 
 plt.xlabel('SNR')
 plt.ylabel('Density')
@@ -44,7 +44,13 @@ plt.title('SNR Distribution per Target Class')
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+
+output_dir = "/home/gal/Desktop/Radars/rcs-target-detection/graphs"
+os.makedirs(output_dir, exist_ok=True)
+
+
+plt.savefig(os.path.join(output_dir, "SNR_Distribution.png"), dpi=300)
+# plt.show()
 
 # -----------------------------
 # Train Random Forest model

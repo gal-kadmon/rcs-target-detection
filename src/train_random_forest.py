@@ -1,3 +1,6 @@
+import os
+
+
 def train_random_forest(data_file, n_trials=30):
     import pandas as pd
     import optuna
@@ -22,6 +25,7 @@ def train_random_forest(data_file, n_trials=30):
     # -----------------------------
     # Optuna objective function
     # -----------------------------
+
     def objective(trial):
         n_estimators = trial.suggest_int('n_estimators', 50, 300)
         max_depth = trial.suggest_int('max_depth', 2, 25)
@@ -37,12 +41,14 @@ def train_random_forest(data_file, n_trials=30):
         )
         scores = cross_val_score(clf, X_train, y_train, cv=3, scoring='f1_macro')
         return scores.mean()
+    
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
 
     study = optuna.create_study(direction='maximize')
     study.optimize(objective, n_trials=n_trials)
 
-    print("\nBest Hyperparameters:")
-    print(study.best_params)
+    #print("\nBest Hyperparameters:")
+    #print(study.best_params)
 
     # -----------------------------
     # Train best model and predict
@@ -61,7 +67,14 @@ def train_random_forest(data_file, n_trials=30):
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Small','Medium','Large'])
     disp.plot(cmap=plt.cm.Blues)
     plt.title("Random Forest Confusion Matrix")
-    plt.show()
+    # plt.show()
+
+    output_dir = "/home/gal/Desktop/Radars/rcs-target-detection/graphs"
+    os.makedirs(output_dir, exist_ok=True)
+
+
+    plt.savefig(os.path.join(output_dir, "rf_confusion_matrix.png"), dpi=300)
+
 
     # -----------------------------
     # Prepare dataframe for plotting
