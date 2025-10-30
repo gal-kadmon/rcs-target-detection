@@ -8,9 +8,9 @@
 ```
 rcs-target-detection/
 │
-├── main.py                 # סקריפט ראשי, מריץ את שאר הסקריפטים
-├── data/                   # דאטה שנוצרת שמורה כאן
-├── graphs/                 # גרפים שנוצרים שמורים כאן
+├── main.py                
+├── data/                   
+├── graphs/                 
 └── src/
     ├── generate_rcs_data.m 
     ├── train_mlp.py      
