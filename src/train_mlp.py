@@ -1,5 +1,11 @@
 import os
-
+import pandas as pd
+import optuna
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 def train_mlp(data_file, n_trials=20):
     """
@@ -19,13 +25,6 @@ def train_mlp(data_file, n_trials=20):
             'y_train': y train set
         }
     """
-    import pandas as pd
-    import optuna
-    from sklearn.neural_network import MLPClassifier
-    from sklearn.model_selection import train_test_split, cross_val_score
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
-    import matplotlib.pyplot as plt
 
     # Load CSV data
     df = pd.read_csv(data_file, header=None)
@@ -94,7 +93,7 @@ def train_mlp(data_file, n_trials=20):
         activation=study.best_params['activation'],
         alpha=study.best_params['alpha'],
         learning_rate_init=study.best_params['learning_rate_init'],
-        max_iter=1000,
+        max_iter=2000,
         random_state=42
     )
 
@@ -110,11 +109,12 @@ def train_mlp(data_file, n_trials=20):
     cm = confusion_matrix(y_test, y_pred, labels=[1,2,3])
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['Small','Medium','Large'])
     disp.plot(cmap=plt.cm.Blues)
+    plt.title("MLP Confusion Matrix")
+
     # plt.show()
 
     output_dir = "/home/gal/Desktop/Radars/rcs-target-detection/graphs"
     os.makedirs(output_dir, exist_ok=True)
-
 
     plt.savefig(os.path.join(output_dir, "mlp_confusion_matrix.png"), dpi=300)
 

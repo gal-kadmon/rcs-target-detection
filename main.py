@@ -22,7 +22,7 @@ data_file = os.path.join(base_dir, 'data', 'rcs_output.csv')
 # Generate synthetic RCS data with Octave
 # -----------------------------
 N = 5000
-#octave.generate_rcs_data(data_file, N, nout=0)
+octave.generate_rcs_data(data_file, N, nout=0)
 
 # -----------------------------
 # Read the generated data
@@ -43,6 +43,7 @@ plt.ylabel('Density')
 plt.title('SNR Distribution per Target Class')
 plt.legend()
 plt.grid(True)
+plt.xlim(-20, 50)
 plt.tight_layout()
 
 output_dir = "/home/gal/Desktop/Radars/rcs-target-detection/graphs"

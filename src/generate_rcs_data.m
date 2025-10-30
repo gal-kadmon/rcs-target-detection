@@ -36,6 +36,16 @@ function generate_rcs_data(filename, N)
     % ----------------------------------------------------
     % Generate samples
     % ----------------------------------------------------
+    
+    % Devide N to 3 groups 
+    N1 = floor(N/3);
+    N2 = floor(N/3);
+    N3 = N - N1 - N2; 
+
+    % Create random permutation of the 3 groups
+    target_class = [ones(1, N1), 2*ones(1, N2), 3*ones(1, N3)];
+    target_class = target_class(randperm(N));
+    
     for i = 1:N
         % Randomly assign target type (1, 2, or 3)
         cls = randi(3);
