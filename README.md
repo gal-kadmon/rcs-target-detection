@@ -7,15 +7,15 @@
 
 ## מבנה הפרויקט
 
-rcs-target-detection/
-│
-├── main.py # סקריפט ראשי: יוצר דאטה, גרפים ומאמן מודלים
-├── data/ # קבצי CSV עם נתוני RCS
-├── graphs/ # גרפים שנוצרים (SNR distribution, confusion matrices)
-└── src/
-├── generate_rcs_data.m # פונקציה ליצירת דאטה סינתטי ב-Octave
-├── train_mlp.py # אימון MLP עם Optuna
-└── train_random_forest.py # אימון Random Forest עם Optuna
+-rcs-target-detection/
+-│
+-├── main.py # סקריפט ראשי: יוצר דאטה, גרפים ומאמן מודלים
+-├── data/ # קבצי CSV עם נתוני RCS
+-├── graphs/ # גרפים שנוצרים (SNR distribution, confusion matrices)
+-└── src/
+-├── generate_rcs_data.m # פונקציה ליצירת דאטה סינתטי ב-Octave
+-├── train_mlp.py # אימון MLP עם Optuna
+-└── train_random_forest.py # אימון Random Forest עם Optuna
 
 
 ---
