@@ -21,7 +21,7 @@ rcs-target-detection/
 
 - **Python 3.8+**  
 - **Octave**  
-- ספריות Python:  
+- Python Libraries:  
   `numpy`, `pandas`, `scikit-learn`, `optuna`, `matplotlib`, `seaborn`, `oct2py`
 
 ---
