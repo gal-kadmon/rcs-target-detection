@@ -1,7 +1,7 @@
 # RCS Target Detection
 
 פרויקט זה עוסק בזיהוי סוגי מטרות (Small, Medium, Large) על סמך נתוני **Radar Cross Section (RCS)** סינתטיים.  
-הפרויקט כולל יצירת דאטה, גרפים של התפלגות SNR, ואימון מודלים של **Random Forest** ו-**MLP** להשוואת ביצועים.
+הפרויקט כולל יצירת דאטה ואימון מודלים של **Random Forest** ו-**MLP** בעזרת Optuna.
 
 ---
 ## מבנה הפרויקט
