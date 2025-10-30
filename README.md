@@ -8,13 +8,13 @@
 ```
 rcs-target-detection/
 │
-├── main.py                 # סקריפט ראשי: יוצר דאטה, גרפים ומאמן מודלים
-├── data/                   # קבצי CSV עם נתוני RCS
-├── graphs/                 # גרפים שנוצרים (SNR distribution, confusion matrices)
+├── main.py                 # סקריפט ראשי, מריץ את שאר הסקריפטים
+├── data/                   # דאטה שנוצרת שמורה כאן
+├── graphs/                 # גרפים שנוצרים שמורים כאן
 └── src/
-    ├── generate_rcs_data.m # פונקציה ליצירת דאטה סינתטי ב-Octave
-    ├── train_mlp.py        # אימון MLP עם Optuna
-    └── train_random_forest.py # אימון Random Forest עם Optuna
+    ├── generate_rcs_data.m 
+    ├── train_mlp.py      
+    └── train_random_forest.py 
 ```
 ---
 ## דרישות
