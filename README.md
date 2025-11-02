@@ -1,6 +1,6 @@
 # RCS Target Detection
 
-פרויקט זה עוסק בזיהוי סוגי מטרות (Small, Medium, Large) על סמך נתוני **Radar Cross Section (RCS)** סינתטיים.  
+פרויקט זה עוסק בזיהוי סוגי מטרות (ציפור, כטב"ם, מטוס) על סמך נתוני **Radar Cross Section (RCS)** סינתטיים.  
 הפרויקט כולל יצירת דאטה ואימון מודלים של **Random Forest** ו-**MLP** בעזרת Optuna.
 
 ---
