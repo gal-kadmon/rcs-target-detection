@@ -18,12 +18,19 @@ function generate_rcs_data(filename, N)
     F = 3;              % Noise figure (linear)
     Pn = k * T * B * F * L;  % Noise power (W)
 
-    % RCS ranges (with overlap)
+    % ----------------------------------------------------
+    % Define RCS ranges for each target class
+    % ----------------------------------------------------
+    % sigma_ranges = [min, max] for each class
     sigma_ranges = [
-        0.01, 2.0;      % Class 1 - small target
-        1.0, 20.0;      % Class 2 - medium target
-        15.0, 50.0;     % Class 3 - large target
+        0.01, 2.0;      % Class 1 - small target (bird)
+        1.0, 20.0;      % Class 2 - medium target (drown)
+        15.0, 50.0;     % Class 3 - large target (airplane)
     ];
+
+    % Compute mean RCS for each class0
+    sigma_mean_values = mean(sigma_ranges, 2);
+
 
     % ----------------------------------------------------
     % Preallocate arrays
@@ -37,7 +44,7 @@ function generate_rcs_data(filename, N)
     % Generate samples
     % ----------------------------------------------------
     
-    % Devide N to 3 groups 
+    % Devide N to 3 groups - so target destribution is equal
     N1 = floor(N/3);
     N2 = floor(N/3);
     N3 = N - N1 - N2; 
@@ -47,15 +54,14 @@ function generate_rcs_data(filename, N)
     target_class = target_class(randperm(N));
     
     for i = 1:N
-        % Randomly assign target type (1, 2, or 3)
-        cls = randi(3);
-        target_class(i) = cls;
 
-        % Draw random sigma from class range
-        sigma_min = sigma_ranges(cls,1);
-        sigma_max = sigma_ranges(cls,2);
-        sigma_i = sigma_min + (sigma_max - sigma_min) * rand();
-        sigma(i) = sigma_i;
+        cls = target_class(i);
+        sigma_mean = sigma_mean_values(cls);    % select the RCS mean for target class  
+        X = randn(2,1);                         % 2 standard normal variables
+        draw_chi2 = sum(X.^2);                  % sum of squares -> chi2 with 2 DOF
+        sigma_i = draw_chi2 * sigma_mean / 2;   % scale to match the desired mean
+        sigma_i = min(max(sigma_i, sigma_ranges(cls,1)), sigma_ranges(cls,2)); % make sure val is withing range 
+        sigma(i) = sigma_i;                    
 
         % Random Range between 1 km - 10 km
         R = 1000 + rand() * 9000;
@@ -65,7 +71,7 @@ function generate_rcs_data(filename, N)
         Pr = PT * (G^2) * (LAMBDA^2) * sigma_i / ((4*pi)^3 * Range(i)^4 * L);
 
         % Add Gaussian noise
-        SNR(i) = (Pr / Pn) * (1 + 0.05 * randn());
+        % SNR(i) = (Pr / Pn) * (1 + 0.03 * randn());
     end
 
     % ----------------------------------------------------
