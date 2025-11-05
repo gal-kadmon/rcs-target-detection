@@ -17,6 +17,7 @@ function generate_rcs_data(filename, N)
     B = 1e6;            % Bandwidth (Hz)
     F = 3;              % Noise figure (linear)
     Pn = k * T * B * F * L;  % Noise power (W)
+    c0 = 3e8;           % Speed of light (m/s)
 
     % ----------------------------------------------------
     % Define RCS ranges for each target class
@@ -28,9 +29,7 @@ function generate_rcs_data(filename, N)
         15.0, 50.0;     % Class 3 - large target (airplane)
     ];
 
-    % Compute mean RCS for each class0
     sigma_mean_values = mean(sigma_ranges, 2);
-
 
     % ----------------------------------------------------
     % Preallocate arrays
@@ -60,25 +59,33 @@ function generate_rcs_data(filename, N)
         X = randn(2,1);                         % 2 standard normal variables
         draw_chi2 = sum(X.^2);                  % sum of squares -> chi2 with 2 DOF
         sigma_i = draw_chi2 * sigma_mean / 2;   % scale to match the desired mean
-        sigma_i = min(max(sigma_i, sigma_ranges(cls,1)), sigma_ranges(cls,2)); % make sure val is withing range 
+        sigma_i = min(max(sigma_i, sigma_ranges(cls,1)), sigma_ranges(cls,2)); % make sure val is within range 
         sigma(i) = sigma_i;                    
 
-        % Random Range between 1 km - 10 km
-        R = 1000 + rand() * 9000;
-        Range(i) = R;
+        % Random Range between 5 km - 40 km
+        R = 5000 + rand() * 35000;
+        true_range = R;
 
-        % Ideal received power
-        Pr = PT * (G^2) * (LAMBDA^2) * sigma_i / ((4*pi)^3 * Range(i)^4 * L);
+        % Ideal power received based on true range
+        Pr = PT * (G^2) * (LAMBDA^2) * sigma_i / ((4*pi)^3 * true_range^4 * L);
+        
+        % Compute SNR
+        SNR(i) = Pr / Pn;
 
-        % Add Gaussian noise
-        % SNR(i) = (Pr / Pn) * (1 + 0.03 * randn());
+        % Add Range Measurement Error as function of SNR
+        delta_R = c0 / (2 * B * sqrt(SNR(i)));  % meters
+
+        % Add Gaussian noise for measurement inaccuracy
+        range_measured = true_range + delta_R * randn();
+        range(i) = range_measured;
+
     end
 
     % ----------------------------------------------------
     % Save data to CSV file
     % Columns: [Range, SNR, target_class]
     % ----------------------------------------------------
-    data = [Range(:), SNR(:), target_class(:)];
+    data = [range(:), SNR(:), target_class(:)];
     csvwrite(filename, data);
     fprintf('CSV successfully created with %d samples: %s\n', N, filename);
 end
