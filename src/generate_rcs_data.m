@@ -73,10 +73,10 @@ function generate_rcs_data(filename, N)
         SNR(i) = Pr / Pn;
 
         % Add Range Measurement Error as function of SNR
-        delta_R = c0 / (2 * B * sqrt(SNR(i)));  % meters
+        delta_R = c0 / (2 * B * sqrt(2*SNR(i)));  % meters
 
         % Add Gaussian noise for measurement inaccuracy
-        range_measured = true_range + delta_R * randn();
+        range_measured = true_range + delta_R * randn(); 
         range(i) = range_measured;
 
     end
